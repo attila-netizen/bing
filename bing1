@@ -1,0 +1,138 @@
+class Stock:
+    def __init__(self):
+        self.total_money = 20
+        self.candies = {
+            "gummy bears": {"quantity": 100, "price": 0.5},
+            "lollipops": {"quantity": 50, "price": 0.2},
+            "chocolate bars": {"quantity": 75, "price": 0.8}
+            }
+        
+class Beheerder:
+    def __init__(self,stock):
+        self.stock = stock
+
+    def add_candy(self, candy_name, quantity, price):
+        if candy_name in self.stock.candies.keys():
+            self.stock.candies[candy_name]["quantity"] += quantity
+            self.stock.candies[candy_name]["price"] = price
+        else:
+            self.stock.candies[candy_name] = {"quantity": quantity, "price": price}
+
+    def remove_candy(self, candy_name):
+        if candy_name in self.stock.candies.keys():
+            del self.stock.candies[candy_name]
+        else:
+            print(f"Sorry, we don't have {candy_name}")
+            
+    def adjust_stock(self):
+        print("please make choice between following options:\n1. If you want to add a new candy or add stock to an existing one.\n2. Remove existing stock.")
+        choice = int(input("Enter choice: "))
+        if choice == 1:
+            candy_name = input("Enter the name of the candy: ")
+            quantity = int(input("Enter the new quantity: "))
+            price = float(input("Enter the new price: "))
+            self.add_candy(candy_name, quantity, price)
+            print(f"{candy_name} stock has been updated.")
+        elif choice == 2:
+            candy_name = input("Enter the name of the candy: ")
+            self.remove_candy(candy_name)
+            
+    def adjust_money(self):
+        print("do you want to:\n 1. collect money\n 2. refill money")
+        choice = int(input("Enter choice: "))
+        if choice == 1:
+            amount = int(input("Enter amount you want to collect: "))
+            self.stock.total_money -= amount
+        elif choice == 2:
+            amount = int(input("Enter amount you want to refill: "))
+            self.stock.total_money += amount
+                     
+                     
+class Klant:
+    def __init__(self,stock):
+        self.stock = stock
+
+    def buy_candy(self):
+        print("Available candies:")
+        for candy_name, candy_info in self.stock.candies.items():
+            print(f"{candy_name} ({candy_info['quantity']} available) - {candy_info['price']} euros each")
+
+        while True:
+            candy_name = input("Enter the name of the candy you want to buy: ")
+            if candy_name in self.stock.candies:
+                candy_info = self.stock.candies[candy_name]
+                if candy_info["quantity"] > 0:
+                    break
+                else:
+                    print(f"Sorry, we are out of {candy_name}. Please choose another candy.")
+            else:
+                print(f"Sorry, we don't have {candy_name}. Please choose another candy.")
+
+        quantity = int(input("Enter the quantity you want to buy: "))
+        total_price = candy_info["price"] * quantity
+        print(f"Total price: {total_price} euros")
+
+        while True:
+            payment = float(input("Enter the amount you want to pay: "))
+            if payment >= total_price:
+                change = payment - total_price
+                self.stock.total_money += total_price
+                candy_info["quantity"] -= quantity
+                print(f"You bought {quantity} {candy_name}.")
+                if change > 0:
+                    print(f"Your change is {change} euros.")
+                break
+            else:
+                print("Sorry, the amount you entered is not enough to buy this candy.")
+                exact_payment = input("Do you want to pay only the exact amount? (Y/N) ")
+                if exact_payment.upper() == "Y":
+                    break
+         
+class Display:
+    def __init__(self):
+        self.stock = Stock()
+        self.beheerder = Beheerder(self.stock)
+        self.klant = Klant(self.stock)
+        
+    def run(self):
+        i,p = 1,1
+        while p < 2:
+            print("What would you like to do?")
+            print("1. Adjust stock of the candies")
+            print("2. Collect and refill money")
+            print("3. End this part of the program")
+
+            choice = input("Enter your choice: ")
+
+            if choice == "1":
+                print(self.stock.candies)
+                self.beheerder.adjust_stock()
+                print(self.stock.candies)
+            elif choice == "2":
+                print(self.stock.total_money)
+                self.beheerder.adjust_money()
+                print(self.stock.total_money)
+            elif choice == "3":
+                break
+            else:
+                print("Invalid choice. Please try again.")
+
+        while i < 2:
+            print("What would you like to do?")
+            print("1. Buy a candy")
+            print("2. End the program")
+            i = int(input("Enter your choice: "))
+            if i == 1:
+                self.klant.buy_candy()
+                print(self.stock.candies)
+                print(self.stock.total_money)
+            elif i == 2:
+                print(self.stock.candies)
+                print(self.stock.total_money)
+                print("End")
+            else:
+                print("invalid choice")
+                i = 0
+program = Display()
+program.run()
+
